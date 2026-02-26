@@ -11,6 +11,8 @@ import (
 
 func main() {
 	fontFlag := flag.String("f", "standard", "banner ASCII font")
+	colorFlag := flag.String("color", "", "text color in hex format: RRGGBB or #RRGGBB")
+	subStrFlag := flag.String("substr", "", "apply color only to matching substring")
 	flag.Parse()
 	inputArgs := flag.Args()
 
@@ -43,18 +45,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	parts := strings.Split(input, "\\n")
-
-	// Ignore trailing "\n" (it should not create an extra empty output block)
-	if len(parts) > 0 && parts[len(parts)-1] == "" {
-		parts = parts[:len(parts)-1]
-	}
-
-	for _, p := range parts {
-		if p == "" {
-			fmt.Println()
-			continue
+	var colorHex *int
+	if strings.TrimSpace(*colorFlag) != "" {
+		parsedColor, err := src.ParseHexColor(*colorFlag)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error: invalid color flag")
+			fmt.Fprintln(os.Stderr, "Use --color RRGGBB (example: --color FF0000)")
+			os.Exit(1)
 		}
-		src.PrintBanner(p, fontMap)
+		colorHex = &parsedColor
 	}
+
+	options := src.BannerOptions{
+		ColorHex: colorHex,
+		SubStr:   *subStrFlag,
+	}
+	src.RenderInput(input, fontMap, options)
 }
