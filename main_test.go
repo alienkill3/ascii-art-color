@@ -20,12 +20,17 @@ func TestMainProcess(t *testing.T) {
 		},
 		{
 			name:     "too many arguments",
-			args:     []string{"hello", "hello"},
+			args:     []string{"sub string", "input string", "something"},
 			wantExit: 1,
 		},
 		{
 			name:     "Successful execution",
 			args:     []string{"hello"},
+			wantExit: 0,
+		},
+		{
+			name:     "Successful execution",
+			args:     []string{"l", "hello\nworld"},
 			wantExit: 0,
 		},
 		{
