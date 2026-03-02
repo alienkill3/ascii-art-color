@@ -4,13 +4,31 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"ascii-art/src"
 )
 
+type hexFlag int
+
+func (h *hexFlag) String() string {
+	return fmt.Sprintf("0x%x", int(*h))
+}
+
+func (h *hexFlag) Set(s string) error {
+	v, err := strconv.ParseInt(s, 0, 64)
+	if err != nil {
+		return err
+	}
+	*h = hexFlag(v)
+	return nil
+}
+
 func main() {
 	fontFlag := flag.String("f", "standard", "banner ASCII font")
+	var colorFlag hexFlag = 0xffffff
+	flag.Var(&colorFlag, "color", "Color Hex 0xRRGGBB")
 	flag.Parse()
 	inputArgs := flag.Args()
 
@@ -20,18 +38,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	if len(inputArgs) != 1 {
+	if len(inputArgs) < 1 || len(inputArgs) > 2 {
 		fmt.Fprintln(os.Stderr, "Error: wrong arguments")
-		fmt.Fprintln(os.Stderr, "Usage: go run . \"INPUT STRING\"")
+		fmt.Fprintln(os.Stderr, "Usage: go run . [OPTION] [STRING]")
 		os.Exit(1)
 	}
 
-	input := inputArgs[0]
+	var input, subStr string
+	if len(inputArgs) == 1 {
+		input = inputArgs[0]
+	} else if len(inputArgs) == 2 {
+		subStr = inputArgs[0]
+		input = inputArgs[1]
+	}
 	if input == "" {
 		return
 	}
 
-	if !src.IsValidAscii(input) {
+	if !src.IsValidAscii(input) || !src.IsValidAscii(subStr) {
 		fmt.Fprintln(os.Stderr, "Error: found non ascii character")
 		os.Exit(1)
 	}
@@ -55,6 +79,6 @@ func main() {
 			fmt.Println()
 			continue
 		}
-		src.PrintBanner(p, fontMap)
+		src.PrintBanner(p, subStr, fontMap, int(colorFlag))
 	}
 }

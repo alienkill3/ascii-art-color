@@ -59,7 +59,7 @@ func TestPrintBanner(t *testing.T) {
 			r, w, _ := os.Pipe()
 			os.Stdout = w
 
-			src.PrintBanner(tt.input, tt.fontMap)
+			src.PrintBanner(tt.input, "", tt.fontMap, 0xffffff)
 
 			// we close the write end of pipe (w) so the (r) observes EOF
 			w.Close()
