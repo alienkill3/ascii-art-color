@@ -61,11 +61,7 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 		} else {
 			// Two args without font being second arg
 			// This is substring string
-			if *subStrFlag == "" {
-				*subStrFlag = parts[0]
-			}
-			cfg.Input = parts[1]
-
+			return cfg, errors.New("Error: wrong font flag\nValid fonts: standard, shadow, thinkertoy")
 		}
 	} else if len(parts) == 3 {
 		// Three args: substring string font
