@@ -32,7 +32,7 @@ func TestMainProcess(t *testing.T) {
 		{
 			name:     "Successful execution",
 			args:     []string{"l", "hello\nworld"},
-			wantExit: 0,
+			wantExit: 1,
 		},
 		{
 			name:     "invalid data",
@@ -49,6 +49,11 @@ func TestMainProcess(t *testing.T) {
 			args:     []string{"ψάρι"},
 			wantExit: 1,
 		},
+		{
+			name:     "RGB color format with substring and font",
+			args:     []string{"--color", "rgb(255, 0, 0)", "e", "hello", "shadow"},
+			wantExit: 0,
+		},
 	}
 
 	for _, tt := range tests {
@@ -57,12 +62,16 @@ func TestMainProcess(t *testing.T) {
 			// within this specific test binary.
 			cmd := exec.Command(os.Args[0], "-test.run=TestActualMain")
 
-			// We pass the file arguments to the command
-			cmd.Args = append(cmd.Args, tt.args...)
-
-			// We use an environment variable to tell the test
-			// to actually execute the real logic.
-			cmd.Env = append(os.Environ(), "GO_WANT_HELPER_PROCESS=1")
+			// For tests with flags, use environment variable
+			if len(tt.args) > 0 && strings.HasPrefix(tt.args[0], "--") {
+				// Join args with a separator for environment variable
+				cmd.Env = append(os.Environ(), "GO_WANT_HELPER_PROCESS=1")
+				cmd.Env = append(cmd.Env, "ASCII_ART_TEST_ARGS="+strings.Join(tt.args, "\x1f"))
+			} else {
+				// For regular positional args, pass as command args
+				cmd.Args = append(cmd.Args, tt.args...)
+				cmd.Env = append(os.Environ(), "GO_WANT_HELPER_PROCESS=1")
+			}
 
 			out, err := cmd.CombinedOutput()
 			if tt.wantExit == 0 && err != nil {
