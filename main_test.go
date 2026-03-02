@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 )
 
@@ -87,6 +88,12 @@ func TestActualMain(t *testing.T) {
 	// Run only when invoked as helper process
 	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
 		return
+	}
+
+	// Helper allows passing app args that begin with '-' via env.
+	if rawArgs := os.Getenv("ASCII_ART_TEST_ARGS"); rawArgs != "" {
+		args := strings.Split(rawArgs, "\x1f")
+		os.Args = append([]string{os.Args[0]}, args...)
 	}
 
 	// Execute CLI logic

@@ -1,11 +1,9 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 
 	"ascii-art/src"
 )
@@ -26,59 +24,37 @@ func (h *hexFlag) Set(s string) error {
 }
 
 func main() {
-	fontFlag := flag.String("f", "standard", "banner ASCII font")
-	var colorFlag hexFlag = 0xffffff
-	flag.Var(&colorFlag, "color", "Color Hex 0xRRGGBB")
-	flag.Parse()
-	inputArgs := flag.Args()
-
-	if !src.IsValidFont(*fontFlag) {
-		fmt.Fprintln(os.Stderr, "Error: wrong font flag")
-		fmt.Fprintln(os.Stderr, "Valid fonts: standard, shadow, thinkertoy")
+	cfg, err := src.ParseCLIArgs(os.Args[1:])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 
-	if len(inputArgs) < 1 || len(inputArgs) > 2 {
-		fmt.Fprintln(os.Stderr, "Error: wrong arguments")
-		fmt.Fprintln(os.Stderr, "Usage: go run . [OPTION] [STRING]")
-		os.Exit(1)
-	}
-
-	var input, subStr string
-	if len(inputArgs) == 1 {
-		input = inputArgs[0]
-	} else if len(inputArgs) == 2 {
-		subStr = inputArgs[0]
-		input = inputArgs[1]
-	}
-	if input == "" {
+	if cfg.Input == "" {
 		return
 	}
 
-	if !src.IsValidAscii(input) || !src.IsValidAscii(subStr) {
+	if !src.IsValidAscii(cfg.Input) {
 		fmt.Fprintln(os.Stderr, "Error: found non ascii character")
 		os.Exit(1)
 	}
 
-	fontData := src.GetReader(src.FontType(*fontFlag))
+	fontData := src.GetReader(cfg.Font)
 	fontMap, err := src.BuildFontMap(fontData)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error parsing font map")
 		os.Exit(1)
 	}
 
-	parts := strings.Split(input, "\\n")
-
-	// Ignore trailing "\n" (it should not create an extra empty output block)
-	if len(parts) > 0 && parts[len(parts)-1] == "" {
-		parts = parts[:len(parts)-1]
-	}
-
-	for _, p := range parts {
-		if p == "" {
-			fmt.Println()
-			continue
+	// Render once, then choose output target (stdout or file).
+	content := src.RenderInputString(cfg.Input, fontMap, cfg.Options)
+	if cfg.OutputFile != "" {
+		err = os.WriteFile(cfg.OutputFile, []byte(content), 0o644)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error writing output file")
+			os.Exit(1)
 		}
-		src.PrintBanner(p, subStr, fontMap, int(colorFlag))
+		return
 	}
+	fmt.Print(content)
 }
