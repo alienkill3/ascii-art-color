@@ -10,15 +10,11 @@ type BannerOptions struct {
 	SubStr   string
 }
 
-func PrintBannerWithOptions(inputString string, fontMap map[rune][]string, options BannerOptions) {
-	// No color option: preserve default rendering behavior.
-	if options.ColorHex == nil {
-		PrintBanner(inputString, fontMap)
-		return
-	}
-
+func bannerBlockWithOptions(inputString string, fontMap map[rune][]string, options BannerOptions) string {
 	parts := []StringColor{{Str: inputString, Flag: true}}
-	if options.SubStr != "" {
+	if options.ColorHex == nil {
+		parts[0].Flag = false
+	} else if options.SubStr != "" {
 		parts = CutSubString(inputString, options.SubStr)
 	}
 
@@ -32,7 +28,7 @@ func PrintBannerWithOptions(inputString string, fontMap map[rune][]string, optio
 				}
 
 				glyph := ascii[line]
-				if part.Flag {
+				if part.Flag && options.ColorHex != nil {
 					builder.WriteString(Colorize(glyph, *options.ColorHex))
 					continue
 				}
@@ -41,12 +37,16 @@ func PrintBannerWithOptions(inputString string, fontMap map[rune][]string, optio
 		}
 		builder.WriteByte('\n')
 	}
-
-	fmt.Print(builder.String())
+	return builder.String()
 }
 
-func RenderInput(input string, fontMap map[rune][]string, options BannerOptions) {
+func PrintBannerWithOptions(inputString string, fontMap map[rune][]string, options BannerOptions) {
+	fmt.Print(bannerBlockWithOptions(inputString, fontMap, options))
+}
+
+func RenderInputString(input string, fontMap map[rune][]string, options BannerOptions) string {
 	parts := strings.Split(input, "\\n")
+	var builder strings.Builder
 
 	// Ignore trailing "\n" (it should not create an extra empty output block)
 	if len(parts) > 0 && parts[len(parts)-1] == "" {
@@ -55,9 +55,14 @@ func RenderInput(input string, fontMap map[rune][]string, options BannerOptions)
 
 	for _, p := range parts {
 		if p == "" {
-			fmt.Println()
+			builder.WriteByte('\n')
 			continue
 		}
-		PrintBannerWithOptions(p, fontMap, options)
+		builder.WriteString(bannerBlockWithOptions(p, fontMap, options))
 	}
+	return builder.String()
+}
+
+func RenderInput(input string, fontMap map[rune][]string, options BannerOptions) {
+	fmt.Print(RenderInputString(input, fontMap, options))
 }

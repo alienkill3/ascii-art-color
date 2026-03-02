@@ -1,64 +1,44 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
-	"strings"
 
 	"ascii-art/src"
 )
 
 func main() {
-	fontFlag := flag.String("f", "standard", "banner ASCII font")
-	colorFlag := flag.String("color", "", "text color in hex format: RRGGBB or #RRGGBB")
-	subStrFlag := flag.String("substr", "", "apply color only to matching substring")
-	flag.Parse()
-	inputArgs := flag.Args()
-
-	if !src.IsValidFont(*fontFlag) {
-		fmt.Fprintln(os.Stderr, "Error: wrong font flag")
-		fmt.Fprintln(os.Stderr, "Valid fonts: standard, shadow, thinkertoy")
+	cfg, err := src.ParseCLIArgs(os.Args[1:])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 
-	if len(inputArgs) != 1 {
-		fmt.Fprintln(os.Stderr, "Error: wrong arguments")
-		fmt.Fprintln(os.Stderr, "Usage: go run . \"INPUT STRING\"")
-		os.Exit(1)
-	}
-
-	input := inputArgs[0]
-	if input == "" {
+	if cfg.Input == "" {
 		return
 	}
 
-	if !src.IsValidAscii(input) {
+	if !src.IsValidAscii(cfg.Input) {
 		fmt.Fprintln(os.Stderr, "Error: found non ascii character")
 		os.Exit(1)
 	}
 
-	fontData := src.GetReader(src.FontType(*fontFlag))
+	fontData := src.GetReader(cfg.Font)
 	fontMap, err := src.BuildFontMap(fontData)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error parsing font map")
 		os.Exit(1)
 	}
 
-	var colorHex *int
-	if strings.TrimSpace(*colorFlag) != "" {
-		parsedColor, err := src.ParseHexColor(*colorFlag)
+	// Render once, then choose output target (stdout or file).
+	content := src.RenderInputString(cfg.Input, fontMap, cfg.Options)
+	if cfg.OutputFile != "" {
+		err = os.WriteFile(cfg.OutputFile, []byte(content), 0o644)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error: invalid color flag")
-			fmt.Fprintln(os.Stderr, "Use --color RRGGBB (example: --color FF0000)")
+			fmt.Fprintln(os.Stderr, "Error writing output file")
 			os.Exit(1)
 		}
-		colorHex = &parsedColor
+		return
 	}
-
-	options := src.BannerOptions{
-		ColorHex: colorHex,
-		SubStr:   *subStrFlag,
-	}
-	src.RenderInput(input, fontMap, options)
+	fmt.Print(content)
 }
