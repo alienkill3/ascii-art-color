@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const OutputUsage = "Usage: go run . [COLOR] [STRING] [BANNER]\n\nEX: go run . --color=red something standard"
+const OutputUsage = "Usage: go run . [COLOR] [SUBSTRING] [STRING] [BANNER]\n\nEX: go run . --color=red so something standard"
 
 var ErrUsage = errors.New(OutputUsage)
 
@@ -20,12 +20,15 @@ type CLIConfig struct {
 
 func ParseCLIArgs(args []string) (CLIConfig, error) {
 	cfg := CLIConfig{Font: Standard}
-	cleanArgs := removeTestArgs(args)
+	// cleanArgs := removeTestArgs(args)
 
 	// Keep --output validation strict to match subject requirements.
-	if err := validateOutputFlagFormat(cleanArgs); err != nil {
-		return cfg, err
-	}
+	// if err := validateOutputFlagFormat(cleanArgs); err != nil {
+	// 	return cfg, err
+	// }
+	// if err := validateOutputFlagFormat(args); err != nil {
+	// 	return cfg, err
+	// }
 
 	fs := flag.NewFlagSet("ascii-art", flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
@@ -36,7 +39,10 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 	fs.String("substr", "", "apply color only to matching substring")
 	outputFlag := fs.String("output", "", "write output to file")
 
-	if err := fs.Parse(cleanArgs); err != nil {
+	// if err := fs.Parse(cleanArgs); err != nil {
+	// 	return cfg, ErrUsage
+	// }
+	if err := fs.Parse(args); err != nil {
 		return cfg, ErrUsage
 	}
 
@@ -44,7 +50,7 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 	if len(parts) < 1 || len(parts) > 3 {
 		return cfg, ErrUsage
 	}
-
+	// fmt.Println(parts)
 	// Handle positional arguments: [substring] string [font]
 	// Logic:
 	// 1 arg: string
@@ -54,10 +60,16 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 	if len(parts) == 1 {
 		cfg.Input = parts[0]
 	} else if len(parts) == 2 {
-		if IsValidFont(parts[1]) {
+		// check if color flag is set
+		if *colorFlag != "" && !IsValidFont(parts[1]) {
+
+			*subStrFlag = parts[0]
+			cfg.Input = parts[1]
+		} else if IsValidFont(parts[1]) {
 			// Two args with second being font
 			cfg.Input = parts[0]
 			cfg.Font = FontType(parts[1])
+
 		} else {
 			// Two args without font being second arg
 			// This is substring string
@@ -118,32 +130,32 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 	return cfg, nil
 }
 
-func removeTestArgs(args []string) []string {
-	filtered := make([]string, 0, len(args))
-	for _, arg := range args {
-		if strings.HasPrefix(arg, "-test.") {
-			continue
-		}
-		filtered = append(filtered, arg)
-	}
-	return filtered
-}
+// func removeTestArgs(args []string) []string {
+// 	filtered := make([]string, 0, len(args))
+// 	for _, arg := range args {
+// 		if strings.HasPrefix(arg, "-test.") {
+// 			continue
+// 		}
+// 		filtered = append(filtered, arg)
+// 	}
+// 	return filtered
+// }
 
-func validateOutputFlagFormat(args []string) error {
-	for _, arg := range args {
-		switch {
-		case arg == "--output":
-			return ErrUsage
-		case strings.HasPrefix(arg, "--output"):
-			if !strings.HasPrefix(arg, "--output=") {
-				return ErrUsage
-			}
-			if strings.TrimSpace(strings.TrimPrefix(arg, "--output=")) == "" {
-				return ErrUsage
-			}
-		case strings.HasPrefix(arg, "-output"):
-			return ErrUsage
-		}
-	}
-	return nil
-}
+// func validateOutputFlagFormat(args []string) error {
+// 	for _, arg := range args {
+// 		switch {
+// 		case arg == "--output":
+// 			return ErrUsage
+// 		case strings.HasPrefix(arg, "--output"):
+// 			if !strings.HasPrefix(arg, "--output=") {
+// 				return ErrUsage
+// 			}
+// 			if strings.TrimSpace(strings.TrimPrefix(arg, "--output=")) == "" {
+// 				return ErrUsage
+// 			}
+// 		case strings.HasPrefix(arg, "-output"):
+// 			return ErrUsage
+// 		}
+// 	}
+// 	return nil
+// }
