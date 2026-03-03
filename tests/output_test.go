@@ -1,4 +1,4 @@
-package main
+package tests
 
 import (
 	"bytes"
@@ -52,6 +52,7 @@ func TestOutput_HelloDoubleNewline(t *testing.T) {
 		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
 	}
 }
+
 func TestOutput_EmptyInput(t *testing.T) {
 	golden, err := os.ReadFile("testdata/empty.golden")
 	if err != nil {
@@ -64,6 +65,7 @@ func TestOutput_EmptyInput(t *testing.T) {
 		t.Fatalf("stdout mismatch\n--- got ---\n%q\n--- want (golden) ---\n%q", got, golden)
 	}
 }
+
 func TestOutput_HelloTrailingNewline(t *testing.T) {
 	golden, err := os.ReadFile("testdata/hello_trailing_newline.golden")
 	if err != nil {
@@ -76,6 +78,7 @@ func TestOutput_HelloTrailingNewline(t *testing.T) {
 		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
 	}
 }
+
 func TestOutput_HelloThere(t *testing.T) {
 	golden, err := os.ReadFile("testdata/hello_there.golden")
 	if err != nil {
