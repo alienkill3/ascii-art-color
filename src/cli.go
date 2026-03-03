@@ -33,8 +33,9 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 	fs := flag.NewFlagSet("ascii-art", flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
 
-	fontFlag := fs.String("f", "", "banner ASCII font")
+	// fontFlag := fs.String("f", "", "banner ASCII font")
 	colorFlag := fs.String("color", "", "text color: color name, hex format (RRGGBB), or RGB format rgb(R, G, B)")
+	alignFlag := fs.String("align", "left", "alignment of the output")
 	subStrFlag := fs.String("s", "", "apply color only to matching substring")
 	fs.String("substr", "", "apply color only to matching substring")
 	outputFlag := fs.String("output", "", "write output to file")
@@ -87,12 +88,12 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 		cfg.Font = FontType(parts[2])
 	}
 
-	if *fontFlag != "" {
-		if !IsValidFont(*fontFlag) {
-			return cfg, errors.New("Error: wrong font flag\nValid fonts: standard, shadow, thinkertoy\n")
-		}
-		cfg.Font = FontType(*fontFlag)
-	}
+	// if *fontFlag != "" {
+	// 	if !IsValidFont(*fontFlag) {
+	// 		return cfg, errors.New("Error: wrong font flag\nValid fonts: standard, shadow, thinkertoy\n")
+	// 	}
+	// 	cfg.Font = FontType(*fontFlag)
+	// }
 
 	if strings.TrimSpace(*colorFlag) != "" {
 		var parsedColor int
@@ -127,6 +128,7 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 
 	cfg.Options.SubStr = *subStrFlag
 	cfg.OutputFile = *outputFlag
+	cfg.Options.Align = *alignFlag
 	return cfg, nil
 }
 

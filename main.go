@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"ascii-art/src"
 )
@@ -46,8 +47,14 @@ func main() {
 		os.Exit(1)
 	}
 
+	ws, err := src.IoctlGetWinsize(int(os.Stdout.Fd()))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error get terminal width")
+		os.Exit(1)
+	}
+
 	// Render once, then choose output target (stdout or file).
-	content := src.RenderInputString(cfg.Input, fontMap, cfg.Options)
+	content := src.RenderInputString(cfg.Input, fontMap, cfg.Options, ws.Cols)
 	if cfg.OutputFile != "" {
 		err = os.WriteFile(cfg.OutputFile, []byte(content), 0o644)
 		if err != nil {
@@ -56,5 +63,13 @@ func main() {
 		}
 		return
 	}
-	fmt.Print(content)
+	for _, ln := range strings.Split(content, "\n") {
+		if cfg.Options.ColorHex != nil {
+			fmt.Printf("%*s\n", int(ws.Cols)+57, ln)
+		} else {
+			fmt.Printf("%*s\n", int(ws.Cols), ln)
+		}
+	}
+	// fmt.Print(content)
+	// fmt.Printf("%*s\n", ws.Cols, "test")
 }

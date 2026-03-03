@@ -8,9 +8,10 @@ import (
 type BannerOptions struct {
 	ColorHex *int
 	SubStr   string
+	Align    string
 }
 
-func bannerBlockWithOptions(inputString string, fontMap map[rune][]string, options BannerOptions) string {
+func bannerBlockWithOptions(inputString string, fontMap map[rune][]string, options BannerOptions, width uint16) string {
 	parts := []StringColor{{Str: inputString, Flag: true}}
 	if options.ColorHex == nil {
 		parts[0].Flag = false
@@ -40,11 +41,12 @@ func bannerBlockWithOptions(inputString string, fontMap map[rune][]string, optio
 	return builder.String()
 }
 
-func PrintBannerWithOptions(inputString string, fontMap map[rune][]string, options BannerOptions) {
-	fmt.Print(bannerBlockWithOptions(inputString, fontMap, options))
+func PrintBannerWithOptions(inputString string, fontMap map[rune][]string, options BannerOptions, width uint16) {
+	fmt.Print(bannerBlockWithOptions(inputString, fontMap, options, width))
+	fmt.Println("test")
 }
 
-func RenderInputString(input string, fontMap map[rune][]string, options BannerOptions) string {
+func RenderInputString(input string, fontMap map[rune][]string, options BannerOptions, width uint16) string {
 	parts := strings.Split(input, "\\n")
 	var builder strings.Builder
 
@@ -58,11 +60,12 @@ func RenderInputString(input string, fontMap map[rune][]string, options BannerOp
 			builder.WriteByte('\n')
 			continue
 		}
-		builder.WriteString(bannerBlockWithOptions(p, fontMap, options))
+		builder.WriteString(bannerBlockWithOptions(p, fontMap, options, width))
 	}
 	return builder.String()
 }
 
-func RenderInput(input string, fontMap map[rune][]string, options BannerOptions) {
-	fmt.Print(RenderInputString(input, fontMap, options))
-}
+// func RenderInput(input string, fontMap map[rune][]string, options BannerOptions, width uint16) {
+// 	fmt.Printf("%*s", width, RenderInputString(input, fontMap, options, width))
+// 	fmt.Println("test")
+// }
