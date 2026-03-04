@@ -1,9 +1,23 @@
 package src
 
 import (
-	"fmt"
+	"regexp"
 	"strings"
 )
+
+// ansiRegexp matches ANSI escape sequences used for colorization.
+var ansiRegexp = regexp.MustCompile(`\x1b\[[0-9;]*m`)
+
+// stripAnsi removes ANSI escape codes from the input string.
+func stripAnsi(s string) string {
+	return ansiRegexp.ReplaceAllString(s, "")
+}
+
+// visibleLen returns the character length of the string after stripping
+// ANSI escape codes, which are not counted towards terminal width.
+func visibleLen(s string) int {
+	return len(stripAnsi(s))
+}
 
 type BannerOptions struct {
 	ColorHex *int
@@ -29,22 +43,119 @@ func bannerBlockWithOptions(inputString string, fontMap map[rune][]string, optio
 				}
 
 				glyph := ascii[line]
+
 				if part.Flag && options.ColorHex != nil {
 					builder.WriteString(Colorize(glyph, *options.ColorHex))
 					continue
 				}
 				builder.WriteString(glyph)
+
 			}
 		}
 		builder.WriteByte('\n')
 	}
-	return builder.String()
+	var newBuilder strings.Builder
+	switch options.Align {
+	case "right":
+		lines := strings.Split(builder.String(), "\n")
+		for i, ln := range lines {
+			// skip the trailing empty element caused by the final newline
+			if i == len(lines)-1 && ln == "" {
+				continue
+			}
+			vis := visibleLen(ln)
+			pad := int(width) - vis
+			if pad < 0 {
+				pad = 0
+			}
+			newBuilder.WriteString(strings.Repeat(" ", pad) + ln + "\n")
+		}
+	case "center":
+		lines := strings.Split(builder.String(), "\n")
+		for i, ln := range lines {
+			if i == len(lines)-1 && ln == "" {
+				continue
+			}
+			vis := visibleLen(ln)
+			pad := (int(width) - vis) / 2
+			if pad < 0 {
+				pad = 0
+			}
+			newBuilder.WriteString(strings.Repeat(" ", pad) + ln + "\n")
+		}
+	case "justify":
+		cleanInput := strings.TrimSpace(inputString)
+		words := strings.Fields(cleanInput)
+		if len(words) < 2 {
+			newBuilder.WriteString(builder.String())
+			break
+		}
+
+		contentWidth := 0
+		for _, part := range parts {
+			for _, rn := range part.Str {
+				if rn != ' ' {
+					if ascii, ok := fontMap[rn]; ok {
+						contentWidth += len(ascii[0])
+					}
+				}
+			}
+		}
+
+		totalSpaceWidth := int(width) - contentWidth
+		numGaps := len(words) - 1
+		if totalSpaceWidth < numGaps {
+			newBuilder.WriteString(builder.String())
+			break
+		}
+
+		spacesPerGap := totalSpaceWidth / numGaps
+		extraSpaces := totalSpaceWidth % numGaps
+
+		for line := 0; line < 8; line++ {
+			currentGap := 0
+			seenFirstWord := false
+			lastWasSpace := false
+			for _, part := range parts {
+				for _, rn := range part.Str {
+					if rn != ' ' {
+						seenFirstWord = true
+						lastWasSpace = false
+						if ascii, ok := fontMap[rn]; ok {
+							glyph := ascii[line]
+							if part.Flag && options.ColorHex != nil {
+								newBuilder.WriteString(Colorize(glyph, *options.ColorHex))
+							} else {
+								newBuilder.WriteString(glyph)
+							}
+						}
+					} else {
+						if seenFirstWord && !lastWasSpace && currentGap < numGaps {
+							w := spacesPerGap
+							if currentGap < extraSpaces {
+								w++
+							}
+							newBuilder.WriteString(strings.Repeat(" ", w))
+							currentGap++
+						}
+						lastWasSpace = true
+					}
+				}
+			}
+			newBuilder.WriteByte('\n')
+		}
+	default: //left
+		newBuilder = builder
+	}
+
+	// return builder.String()
+	return newBuilder.String()
 }
 
-func PrintBannerWithOptions(inputString string, fontMap map[rune][]string, options BannerOptions, width uint16) {
-	fmt.Print(bannerBlockWithOptions(inputString, fontMap, options, width))
-	fmt.Println("test")
-}
+// func PrintBannerWithOptions(inputString string, fontMap map[rune][]string, options BannerOptions, width uint16) {
+// 	fmt.Print(bannerBlockWithOptions(inputString, fontMap, options, width))
+// 	fmt.Println("test")
+// }
 
 func RenderInputString(input string, fontMap map[rune][]string, options BannerOptions, width uint16) string {
 	parts := strings.Split(input, "\\n")

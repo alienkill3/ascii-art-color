@@ -48,13 +48,14 @@ func main() {
 	}
 
 	ws, err := src.IoctlGetWinsize(int(os.Stdout.Fd()))
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error get terminal width")
-		os.Exit(1)
+	width := uint16(80) // default width
+	if err == nil {
+		width = ws.Cols
 	}
 
 	// Render once, then choose output target (stdout or file).
-	content := src.RenderInputString(cfg.Input, fontMap, cfg.Options, ws.Cols)
+	input := strings.ReplaceAll(cfg.Input, "\\n", "\n")
+	content := src.RenderInputString(input, fontMap, cfg.Options, width)
 	if cfg.OutputFile != "" {
 		err = os.WriteFile(cfg.OutputFile, []byte(content), 0o644)
 		if err != nil {
@@ -63,13 +64,13 @@ func main() {
 		}
 		return
 	}
-	for _, ln := range strings.Split(content, "\n") {
-		if cfg.Options.ColorHex != nil {
-			fmt.Printf("%*s\n", int(ws.Cols)+57, ln)
-		} else {
-			fmt.Printf("%*s\n", int(ws.Cols), ln)
-		}
-	}
-	// fmt.Print(content)
+	// for _, ln := range strings.Split(content, "\n") {
+	// 	if cfg.Options.ColorHex != nil {
+	// 		fmt.Printf("%*s\n", int(ws.Cols)+57, ln)
+	// 	} else {
+	// 		fmt.Printf("%*s\n", int(ws.Cols), ln)
+	// 	}
+	// }
+	fmt.Print(content)
 	// fmt.Printf("%*s\n", ws.Cols, "test")
 }
