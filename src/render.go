@@ -158,7 +158,7 @@ func bannerBlockWithOptions(inputString string, fontMap map[rune][]string, optio
 // }
 
 func RenderInputString(input string, fontMap map[rune][]string, options BannerOptions, width uint16) string {
-	parts := strings.Split(input, "\\n")
+	parts := strings.Split(input, "\n")
 	var builder strings.Builder
 
 	// Ignore trailing "\n" (it should not create an extra empty output block)
