@@ -40,7 +40,7 @@ func ParseHexColor(color string) (int, error) {
 func ParseRGBColor(color string) (int, error) {
 	clean := strings.TrimSpace(color)
 	if !strings.HasPrefix(clean, "rgb(") || !strings.HasSuffix(clean, ")") {
-		return 0, fmt.Errorf("invalid RGB format: use rgb(R, G, B) where R, G, B are 0-255\n")
+		return 0, fmt.Errorf("invalid RGB format: use rgb'(R, G, B)' where R, G, B are 0-255\n")
 	}
 
 	// Extract the values inside rgb(...)
@@ -49,7 +49,7 @@ func ParseRGBColor(color string) (int, error) {
 
 	parts := strings.Split(inside, ",")
 	if len(parts) != 3 {
-		return 0, fmt.Errorf("invalid RGB format: use rgb(R, G, B) where R, G, B are 0-255\n")
+		return 0, fmt.Errorf("invalid RGB format: use rgb'(R, G, B)' where R, G, B are 0-255\n")
 	}
 
 	var r, g, b int
@@ -92,5 +92,5 @@ func ParseNamedColor(color string) (int, error) {
 		return val, nil
 	}
 
-	return 0, fmt.Errorf("unsupported color name: try using a hex code (#RRGGBB) or RGB format (rgb(R, G, B))\n")
+	return 0, fmt.Errorf("unsupported color name: try using a hex code (#RRGGBB) or RGB format (rgb'(R, G, B)')\n")
 }
