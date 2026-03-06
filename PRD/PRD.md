@@ -6,17 +6,36 @@ The primary use case is for a user to generate large, stylized ASCII text in a t
 
 ### 3. CLI Contract
 The program is executed through the terminal using the Go command:
-`go run . [-f] [banner font] [INPUT STRING]`.
-The flag `-f` is optional, the default banner font will be `standard`, if the flag is omitted.
+```
+go run . [FLAGS] [SUBSTRING] [INPUT STRING] [BANNER FONT]
+```
+#### Flags:
+*   `--color=<value>`: Apply color to output (named color, hex: RRGGBB, or RGB: rgb(R,G,B))
+*   `--align=<value>`: Set text alignment (default: `left`, options: `left`, `right`, `center`, `justify`)
+*   `-s <value>` or `--substr=<value>`: Apply color only to matching substring (requires `--color`)
+*   `--output=<file>`: Write output to file instead of stdout
+
+#### Positional Arguments:
+*   **1 argument:** Input string (uses default font: `standard`)
+*   **2 arguments:** Input string + font name (`standard`, `shadow`, `thinkertoy`)
+*   **3 arguments (with `--color`):** Substring + input string + font name
+
+The banner font defaults to `standard` if omitted.
 
 ### 4. Functional Requirements (Rules)
-*   **Input Handling:** The program must handle strings containing numbers, uppercase and lowercase letters, spaces, special characters, and the newline character (`\n`).
+*   **Input Handling:** The program must handle strings containing numbers, uppercase and lowercase letters, spaces, special characters, and the newline character (`\n`). It also supports arguments starting with `-` (e.g., `-123`, `-randomstring`) as valid input text.
 *   **Template Usage:** The program must use specific banner files provided as graphical templates: `shadow`, `standard`, and `thinkertoy`.
 *   **Banner Format:**
     *   Each character in the banner files has a fixed height of **8 lines**.
     *   Characters in the banner files are separated by a newline character.
     *   The banner files are formatted correctly and do not require modification.
 *   **Output logic:** The program must output the string graphically, respecting the 8-line height for each character and correctly interpreting `\n` in the input to move to a new block of ASCII art.
+*   **Color Support:** The program must support coloring the entire output or a substring match using:
+    *   Named colors (e.g., `--color=red`)
+    *   Hex format (e.g., `--color=FF5733`)
+    *   RGB format (e.g., `--color=rgb(255,87,51)`)
+*   **Text Alignment:** The program must support left, right, center, and justify alignment via the `--align` flag.
+*   **File Output:** The program must support writing the rendered ASCII art to a file using the `--output` flag.
 
 ### 5. Non-Goals (Out of Scope)
 *   The use of any external packages; only **standard Go packages** are allowed.

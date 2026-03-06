@@ -1,5 +1,12 @@
 package main
 
+// main.go is the entry point of the ASCII Art Color application.
+// It orchestrates the complete workflow: parsing CLI arguments, validating input,
+// loading the selected ASCII art font, building a font map, detecting terminal width,
+// rendering the ASCII art with specified styling (color, alignment, substring coloring),
+// and writing the output to either stdout or a file. It handles all error cases with
+// appropriate error messages to stderr.
+
 import (
 	"fmt"
 	"os"
@@ -26,13 +33,12 @@ func (h *hexFlag) Set(s string) error {
 
 func main() {
 	cfg, err := src.ParseCLIArgs(os.Args[1:])
+	if cfg.Input == "" {
+		return
+	}
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
-	}
-
-	if cfg.Input == "" {
-		return
 	}
 
 	if !src.IsValidAscii(cfg.Input) {
@@ -64,13 +70,6 @@ func main() {
 		}
 		return
 	}
-	// for _, ln := range strings.Split(content, "\n") {
-	// 	if cfg.Options.ColorHex != nil {
-	// 		fmt.Printf("%*s\n", int(ws.Cols)+57, ln)
-	// 	} else {
-	// 		fmt.Printf("%*s\n", int(ws.Cols), ln)
-	// 	}
-	// }
 	fmt.Print(content)
 	// fmt.Printf("%*s\n", ws.Cols, "test")
 }
