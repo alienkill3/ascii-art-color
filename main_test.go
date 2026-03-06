@@ -143,6 +143,24 @@ func runMainAndGetStdout(t *testing.T, args ...string) []byte {
 	return out
 }
 
+func runMainAndGetStdoutWithFlags(t *testing.T, args ...string) []byte {
+	t.Helper()
+
+	cmd := exec.Command(os.Args[0], "-test.run=TestActualMain")
+	cmd.Env = append(
+		os.Environ(),
+		"GO_WANT_HELPER_PROCESS=1",
+		"ASCII_ART_TEST_ARGS="+strings.Join(args, "\x1f"),
+	)
+
+	out, err := cmd.Output()
+	if err != nil {
+		combined, _ := cmd.CombinedOutput()
+		t.Fatalf("process failed: %v\noutput:\n%s", err, combined)
+	}
+	return out
+}
+
 func TestOutput_NewlineOnly(t *testing.T) {
 	golden, err := os.ReadFile("testdata/newline.golden")
 	if err != nil {
@@ -208,6 +226,97 @@ func TestOutput_HelloThere(t *testing.T) {
 	}
 }
 
+func TestOutput_HelloShadow(t *testing.T) {
+	golden, err := os.ReadFile("testdata/hello_shadow.golden")
+	if err != nil {
+		t.Fatalf("failed to read golden file: %v", err)
+	}
+
+	got := runMainAndGetStdout(t, "hello", "shadow")
+
+	if !bytes.Equal(got, golden) {
+		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
+	}
+}
+
+func TestOutput_HelloThinkertoy(t *testing.T) {
+	golden, err := os.ReadFile("testdata/hello_thinkertoy.golden")
+	if err != nil {
+		t.Fatalf("failed to read golden file: %v", err)
+	}
+
+	got := runMainAndGetStdout(t, "hello", "thinkertoy")
+
+	if !bytes.Equal(got, golden) {
+		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
+	}
+}
+
+func TestOutput_BracketsInternalNewline(t *testing.T) {
+	golden, err := os.ReadFile("testdata/brackets_internal_newline.golden")
+	if err != nil {
+		t.Fatalf("failed to read golden file: %v", err)
+	}
+
+	got := runMainAndGetStdout(t, "{Hello\\nThere}")
+
+	if !bytes.Equal(got, golden) {
+		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
+	}
+}
+
+func TestOutput_NumbersTrailingNewline(t *testing.T) {
+	golden, err := os.ReadFile("testdata/numbers_trailing_newline.golden")
+	if err != nil {
+		t.Fatalf("failed to read golden file: %v", err)
+	}
+
+	got := runMainAndGetStdout(t, "1Hello 2There\\n")
+
+	if !bytes.Equal(got, golden) {
+		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
+	}
+}
+
+func TestOutput_RGBColorSubstrHelloShadow(t *testing.T) {
+	golden, err := os.ReadFile("testdata/rgb_color_substr_e_hello_shadow.golden")
+	if err != nil {
+		t.Fatalf("failed to read golden file: %v", err)
+	}
+
+	got := runMainAndGetStdoutWithFlags(t, "--color", "rgb(255, 0, 0)", "e", "hello", "shadow")
+
+	if !bytes.Equal(got, golden) {
+		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
+	}
+}
+
+func TestOutput_ColorFullHelloRed(t *testing.T) {
+	golden, err := os.ReadFile("testdata/color_full_hello_red.golden")
+	if err != nil {
+		t.Fatalf("failed to read golden file: %v", err)
+	}
+
+	got := runMainAndGetStdoutWithFlags(t, "--color", "red", "hello", "standard")
+
+	if !bytes.Equal(got, golden) {
+		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
+	}
+}
+
+func TestOutput_ColorSubstrNotFound(t *testing.T) {
+	golden, err := os.ReadFile("testdata/color_substr_not_found.golden")
+	if err != nil {
+		t.Fatalf("failed to read golden file: %v", err)
+	}
+
+	got := runMainAndGetStdoutWithFlags(t, "--color", "red", "z", "hello", "standard")
+
+	if !bytes.Equal(got, golden) {
+		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
+	}
+}
+
 func TestOutput_WriteToFile(t *testing.T) {
 	filePath := filepath.Join(t.TempDir(), "banner.txt")
 	expected := runMainAndGetStdout(t, "hello", "standard")
@@ -247,6 +356,24 @@ func TestOutput_InvalidOutputFormat_ShowsUsage(t *testing.T) {
 	}
 	if !strings.Contains(string(out), src.OutputUsage) {
 		t.Fatalf("expected usage message, got: %s", out)
+	}
+}
+
+func TestOutput_WriteToDirectory_ShowsWriteError(t *testing.T) {
+	dirPath := t.TempDir()
+	cmd := exec.Command(os.Args[0], "-test.run=TestActualMain")
+	cmd.Env = append(
+		os.Environ(),
+		"GO_WANT_HELPER_PROCESS=1",
+		"ASCII_ART_TEST_ARGS=--output="+dirPath+"\x1fhello\x1fstandard",
+	)
+
+	out, err := cmd.CombinedOutput()
+	if err == nil {
+		t.Fatalf("expected non-zero exit, got success. output: %s", out)
+	}
+	if !strings.Contains(string(out), "Error writing output file") {
+		t.Fatalf("expected write error message, got: %s", out)
 	}
 }
 
