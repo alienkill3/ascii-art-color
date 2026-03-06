@@ -3,6 +3,9 @@
 ## Description
 This project is a command-line tool written in **Go** that converts a given string into a large, stylized **ASCII graphical representation**. It maps input characters to 8-line high blocks from specific banner templates to create banner-style art in the terminal. The tool also supports **color output** and **text alignment** with flexible flag-based configuration.
 
+## Requirments
+*   Golang installed (recommended version 1.25.6).
+*   A terminal that supports ANSI color output.
 ## Usage
 The program is executed through the terminal using the following command:
 
@@ -17,7 +20,7 @@ go run . [FLAGS] [SUBSTRING] 'INPUT_STRING' [BANNER_FONT]
 *   `--color=<value>`: Apply color to the output (required for substring coloring)
     *   Named colors: `red`, `green`, `blue`, `yellow`, `cyan`, `purple`, `orange`, `pink`
     *   Hex format: `--color=#FF5733` (6-digit hex)
-        * (Valid hex digits are `a-f` and `0-9`)
+        * Valid hex digits are `a-f` and `0-9`
     *   RGB format: `--color=rgb'(255,87,51)'`
         * Valid numbers are `0-255`
 *   `--align=<value>`: Set text alignment
@@ -29,8 +32,9 @@ go run . [FLAGS] [SUBSTRING] 'INPUT_STRING' [BANNER_FONT]
     *   Example: `--output=result.txt`
 
 ### Positional Arguments:
-*   **[INPUT_STRING]**: The text you want to convert (REQUIRED).
-    * Supports uppercase/lowercase letters, numbers, spaces, special characters, and newline (`\n`) characters. To avoid any syntax conflicts with the terminal we should always put the `INPUT_STRING` inside single quotes `(')`
+*   **[INPUT_STRING]**: The text you want to convert.
+    * Supports uppercase/lowercase letters, numbers, spaces, special characters, and newline (`\n`) characters. 
+        * To avoid any syntax conflicts with the terminal we should always put the `INPUT_STRING` inside single quotes `(')`
 *   **[BANNER_FONT]**: Optional font selection. Defaults to `standard`.
     *   Options: `standard`, `shadow`, `thinkertoy`
 *   **[SUBSTRING]**: When `--color` is used, the first positional becomes the substring, second becomes the string, third becomes the font. 
@@ -48,10 +52,10 @@ go run . [FLAGS] [SUBSTRING] 'INPUT_STRING' [BANNER_FONT]
 
 ## Implementation Approach
 
-- Pipeline approach. For more info refer to [Architecture](/docs/architecture.md) and [Diagram](/docs/diagram.md)
+- Pipeline approach. For more info refer to [Architecture](/docs/architecture.md) and [Diagram](/docs/diagram.md).
 
 ## Example Usage
 
-*   For example usage please refer to [Examples](/docs/examples.md)
+*   For example usage please refer to [Examples](/docs/examples.md).
 
 
