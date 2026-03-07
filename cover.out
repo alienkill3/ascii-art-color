@@ -14,7 +14,7 @@ ascii-art/main.go:51.26,53.17 2 0
 ascii-art/main.go:53.17,56.4 2 0
 ascii-art/main.go:57.3,57.9 1 0
 ascii-art/main.go:59.2,59.20 1 0
-ascii-art/src/cli.go:28.53,44.43 10 1
+ascii-art/src/cli.go:28.53,44.43 9 1
 ascii-art/src/cli.go:44.43,46.3 1 0
 ascii-art/src/cli.go:49.2,50.20 2 1
 ascii-art/src/cli.go:50.20,52.3 1 1
@@ -192,7 +192,7 @@ ascii-art/main.go:51.26,53.17 2 1
 ascii-art/main.go:53.17,56.4 2 1
 ascii-art/main.go:57.3,57.9 1 1
 ascii-art/main.go:59.2,59.20 1 1
-ascii-art/src/cli.go:28.53,44.43 10 1
+ascii-art/src/cli.go:28.53,44.43 9 1
 ascii-art/src/cli.go:44.43,46.3 1 1
 ascii-art/src/cli.go:49.2,50.20 2 1
 ascii-art/src/cli.go:50.20,52.3 1 1
@@ -355,7 +355,7 @@ ascii-art/src/separateArgsAndFlags.go:53.2,53.33 1 1
 ascii-art/src/terminal.go:16.48,24.16 3 1
 ascii-art/src/terminal.go:24.16,26.3 1 1
 ascii-art/src/terminal.go:27.2,27.20 1 0
-ascii-art/src/cli.go:28.53,44.43 10 0
+ascii-art/src/cli.go:28.53,44.43 9 0
 ascii-art/src/cli.go:44.43,46.3 1 0
 ascii-art/src/cli.go:49.2,50.20 2 0
 ascii-art/src/cli.go:50.20,52.3 1 0

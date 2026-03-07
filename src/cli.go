@@ -38,7 +38,7 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 	colorFlag := fs.String("color", "", "text color: color name, hex format (RRGGBB), or RGB format rgb(R, G, B)")
 	alignFlag := fs.String("align", "left", "alignment of the output")
 	subStrFlag := fs.String("s", "", "apply color only to matching substring")
-	fs.String("substr", "", "apply color only to matching substring")
+	// fs.String("substr", "", "apply color only to matching substring")
 	outputFlag := fs.String("output", "", "write output to file")
 
 	if err := fs.Parse(flagArgs); err != nil {

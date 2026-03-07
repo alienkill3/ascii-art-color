@@ -26,7 +26,7 @@ go run . [FLAGS] [SUBSTRING] 'INPUT_STRING' [BANNER_FONT]
 *   `--align=<value>`: Set text alignment
     *   Options: `left` (default), `right`, `center`, `justify`
     *   Example: `--align=right`
-*   `(optional) -s <substring>` or `--substr=<substring>`: Apply color only to matching substring (requires `--color`). 
+*   `(optional) -s <substring>`: Apply color only to matching substring (requires `--color`). 
     * The program will also recognize the substring without the flag prefix
 *   `--output=<file>`: Write output to a file instead of stdout
     *   Example: `--output=result.txt`
