@@ -114,8 +114,14 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 	}
 
 	// Validate that substring is only used with color flag
-	if strings.TrimSpace(*subStrFlag) != "" && cfg.Options.ColorHex == nil {
-		return cfg, errors.New("Error: substring flag requires --color flag to be set\nCorrect format: go run . [color] [substring] [string] [banner]\nExample: go run . --color=red e hello shadow\n")
+	if strings.TrimSpace(*subStrFlag) != "" {
+		// Check if substring looks like an unrecognized flag
+		if strings.HasPrefix(*subStrFlag, "--") {
+			return cfg, ErrUsage
+		}
+		if cfg.Options.ColorHex == nil {
+			return cfg, errors.New("Error: substring flag requires --color flag to be set\nCorrect format: go run . [color] [substring] [string] [banner]\nExample: go run . --color=red e hello shadow\n")
+		}
 	}
 
 	cfg.Options.SubStr = *subStrFlag
