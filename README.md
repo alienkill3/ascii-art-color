@@ -12,9 +12,14 @@ The program is executed through the terminal using the following command:
 ```bash
 go run . [FLAGS] [SUBSTRING] 'INPUT_STRING' [BANNER_FONT]
 ```
-
-*   Keep in mind that you have to put your string inside single quotes or escape the special characters, ex. `'!@#'` or `\!\@\#`
+#### KEEP IN MIND
+*   You have to put your string inside single quotes or escape the special characters, ex. `'!@#'` or `\!\@\#`
 *   The single quote `(')` approach is strongly recommended
+*   For very complex cases it is adviced to put the `--` **standard UNIX seperator** after you finish typing your flags
+    *  Example: 
+    ```bash
+    go run . --align=right --output=txt.txt -- '--align=right' shadow
+    ```
 
 ### Flags:
 *   `--color=<value>`: Apply color to the output (required for substring coloring)
