@@ -33,10 +33,11 @@ func (h *hexFlag) Set(s string) error {
 
 func main() {
 	cfg, err := src.ParseCLIArgs(os.Args[1:])
-	if cfg.Input == "" {
-		return
-	}
 	if err != nil {
+		// If no arguments were provided at all, silently exit
+		if err == src.ErrUsage && cfg.Input == "" && len(os.Args) < 2 {
+			return
+		}
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}

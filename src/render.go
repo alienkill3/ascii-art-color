@@ -158,6 +158,8 @@ func bannerBlockWithOptions(inputString string, fontMap map[rune][]string, optio
 // }
 
 func RenderInputString(input string, fontMap map[rune][]string, options BannerOptions, width uint16) string {
+	// Replace escaped newlines with actual newlines
+	input = strings.ReplaceAll(input, "\\n", "\n")
 	parts := strings.Split(input, "\n")
 	var builder strings.Builder
 

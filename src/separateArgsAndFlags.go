@@ -10,6 +10,11 @@ func separateArgsAndFlags(args []string) ([]string, []string) {
 	var positionalArgs []string
 	foundPositional := false
 
+	// If only 1 argument and it looks like a flag, treat it as positional input
+	if len(args) == 1 && strings.HasPrefix(args[0], "-") {
+		return flagArgs, args
+	}
+
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
 

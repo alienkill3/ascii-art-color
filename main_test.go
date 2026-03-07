@@ -22,7 +22,7 @@ func TestMainProcess(t *testing.T) {
 		{
 			name:     "empty arguments",
 			args:     []string{},
-			wantExit: 1,
+			wantExit: 0,
 		},
 		{
 			name:     "too many arguments",
