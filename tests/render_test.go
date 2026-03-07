@@ -1,6 +1,7 @@
-package src
+package tests
 
 import (
+	"ascii-art/src"
 	"strings"
 	"testing"
 )
@@ -18,10 +19,10 @@ func stubFontMap() map[rune][]string {
 
 func TestRenderInputString(t *testing.T) {
 	fontMap := stubFontMap()
-	opts := BannerOptions{Align: "left"}
+	opts := src.BannerOptions{Align: "left"}
 
 	t.Run("escaped newline creates two 8-line blocks", func(t *testing.T) {
-		got := RenderInputString("A\\nB", fontMap, opts, 80)
+		got := src.RenderInputString("A\\nB", fontMap, opts, 80)
 		lines := strings.Split(strings.TrimRight(got, "\n"), "\n")
 		if len(lines) != 16 {
 			t.Fatalf("line count = %d, want 16", len(lines))
@@ -29,7 +30,7 @@ func TestRenderInputString(t *testing.T) {
 	})
 
 	t.Run("trailing escaped newline does not create extra block", func(t *testing.T) {
-		got := RenderInputString("A\\n", fontMap, opts, 80)
+		got := src.RenderInputString("A\\n", fontMap, opts, 80)
 		lines := strings.Split(strings.TrimRight(got, "\n"), "\n")
 		if len(lines) != 8 {
 			t.Fatalf("line count = %d, want 8", len(lines))
@@ -37,11 +38,10 @@ func TestRenderInputString(t *testing.T) {
 	})
 
 	t.Run("justify with one word falls back to left layout", func(t *testing.T) {
-		left := RenderInputString("A", fontMap, BannerOptions{Align: "left"}, 2)
-		justify := RenderInputString("A", fontMap, BannerOptions{Align: "justify"}, 2)
+		left := src.RenderInputString("A", fontMap, src.BannerOptions{Align: "left"}, 2)
+		justify := src.RenderInputString("A", fontMap, src.BannerOptions{Align: "justify"}, 2)
 		if justify != left {
 			t.Fatalf("justify output mismatch\nleft:\n%q\njustify:\n%q", left, justify)
 		}
 	})
 }
-

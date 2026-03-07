@@ -1,6 +1,7 @@
-package src
+package tests
 
 import (
+	"ascii-art/src"
 	"reflect"
 	"testing"
 )
@@ -10,19 +11,19 @@ func TestCutSubString(t *testing.T) {
 		name   string
 		str    string
 		subStr string
-		want   []StringColor
+		want   []src.StringColor
 	}{
 		{
 			name:   "empty substring returns full string without color",
 			str:    "hello",
 			subStr: "",
-			want:   []StringColor{{Str: "hello", Flag: false}},
+			want:   []src.StringColor{{Str: "hello", Flag: false}},
 		},
 		{
 			name:   "leading and trailing matches",
 			str:    "abXXcdXX",
 			subStr: "XX",
-			want: []StringColor{
+			want: []src.StringColor{
 				{Str: "ab", Flag: false},
 				{Str: "XX", Flag: true},
 				{Str: "cd", Flag: false},
@@ -33,7 +34,7 @@ func TestCutSubString(t *testing.T) {
 			name:   "overlapping pattern uses first non-overlapping matches",
 			str:    "aaaa",
 			subStr: "aa",
-			want: []StringColor{
+			want: []src.StringColor{
 				{Str: "aa", Flag: true},
 				{Str: "aa", Flag: true},
 			},
@@ -42,17 +43,16 @@ func TestCutSubString(t *testing.T) {
 			name:   "no match returns original string as plain",
 			str:    "hello",
 			subStr: "z",
-			want:   []StringColor{{Str: "hello", Flag: false}},
+			want:   []src.StringColor{{Str: "hello", Flag: false}},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := CutSubString(tt.str, tt.subStr)
+			got := src.CutSubString(tt.str, tt.subStr)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Fatalf("CutSubString(%q, %q) = %#v, want %#v", tt.str, tt.subStr, got, tt.want)
 			}
 		})
 	}
 }
-

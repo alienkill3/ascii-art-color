@@ -1,6 +1,7 @@
-package src
+package tests
 
 import (
+	"ascii-art/src"
 	"io"
 	"strings"
 	"testing"
@@ -8,7 +9,7 @@ import (
 
 func TestBuildFontMap(t *testing.T) {
 	t.Run("builds map from embedded standard font", func(t *testing.T) {
-		fontMap, err := BuildFontMap(GetReader(Standard))
+		fontMap, err := src.BuildFontMap(src.GetReader(src.Standard))
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -21,12 +22,12 @@ func TestBuildFontMap(t *testing.T) {
 	})
 
 	t.Run("supports CRLF input", func(t *testing.T) {
-		raw, err := io.ReadAll(GetReader(Standard))
+		raw, err := io.ReadAll(src.GetReader(src.Standard))
 		if err != nil {
 			t.Fatalf("failed to read standard font: %v", err)
 		}
 		crlfData := strings.ReplaceAll(string(raw), "\n", "\r\n")
-		fontMap, err := BuildFontMap(strings.NewReader(crlfData))
+		fontMap, err := src.BuildFontMap(strings.NewReader(crlfData))
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -42,7 +43,7 @@ func TestBuildFontMap(t *testing.T) {
 			"",
 		}, "\n")
 
-		_, err := BuildFontMap(strings.NewReader(truncated))
+		_, err := src.BuildFontMap(strings.NewReader(truncated))
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}
@@ -51,4 +52,3 @@ func TestBuildFontMap(t *testing.T) {
 		}
 	})
 }
-

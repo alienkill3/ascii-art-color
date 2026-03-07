@@ -1,19 +1,20 @@
-package src
+package tests
 
 import (
+	"ascii-art/src"
 	"strings"
 	"testing"
 )
 
 func TestColorizeAndParsers(t *testing.T) {
 	t.Run("colorize empty string", func(t *testing.T) {
-		if got := Colorize("", 0xFF0000); got != "" {
+		if got := src.Colorize("", 0xFF0000); got != "" {
 			t.Fatalf("got %q, want empty string", got)
 		}
 	})
 
 	t.Run("parse hex color", func(t *testing.T) {
-		got, err := ParseHexColor("#00ff00")
+		got, err := src.ParseHexColor("#00ff00")
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -23,14 +24,14 @@ func TestColorizeAndParsers(t *testing.T) {
 	})
 
 	t.Run("parse invalid hex color", func(t *testing.T) {
-		_, err := ParseHexColor("#00gg00")
+		_, err := src.ParseHexColor("#00gg00")
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}
 	})
 
 	t.Run("parse rgb color", func(t *testing.T) {
-		got, err := ParseRGBColor("rgb(255, 0, 128)")
+		got, err := src.ParseRGBColor("rgb(255, 0, 128)")
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -40,14 +41,14 @@ func TestColorizeAndParsers(t *testing.T) {
 	})
 
 	t.Run("parse invalid rgb color", func(t *testing.T) {
-		_, err := ParseRGBColor("rgb(300, 0, 0)")
+		_, err := src.ParseRGBColor("rgb(300, 0, 0)")
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}
 	})
 
 	t.Run("parse named color is case-insensitive", func(t *testing.T) {
-		got, err := ParseNamedColor("ReD")
+		got, err := src.ParseNamedColor("ReD")
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -57,7 +58,7 @@ func TestColorizeAndParsers(t *testing.T) {
 	})
 
 	t.Run("unsupported named color", func(t *testing.T) {
-		_, err := ParseNamedColor("rad")
+		_, err := src.ParseNamedColor("rad")
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}
@@ -66,4 +67,3 @@ func TestColorizeAndParsers(t *testing.T) {
 		}
 	})
 }
-
