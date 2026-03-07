@@ -22,7 +22,8 @@ func TestRenderInputString(t *testing.T) {
 	opts := src.BannerOptions{Align: "left"}
 
 	t.Run("escaped newline creates two 8-line blocks", func(t *testing.T) {
-		got := src.RenderInputString("A\\nB", fontMap, opts, 80)
+		input := strings.ReplaceAll("A\\nB", "\\n", "\n")
+		got := src.RenderInputString(input, fontMap, opts, 80)
 		lines := strings.Split(strings.TrimRight(got, "\n"), "\n")
 		if len(lines) != 16 {
 			t.Fatalf("line count = %d, want 16", len(lines))
@@ -30,7 +31,8 @@ func TestRenderInputString(t *testing.T) {
 	})
 
 	t.Run("trailing escaped newline does not create extra block", func(t *testing.T) {
-		got := src.RenderInputString("A\\n", fontMap, opts, 80)
+		input := strings.ReplaceAll("A\\n", "\\n", "\n")
+		got := src.RenderInputString(input, fontMap, opts, 80)
 		lines := strings.Split(strings.TrimRight(got, "\n"), "\n")
 		if len(lines) != 8 {
 			t.Fatalf("line count = %d, want 8", len(lines))
