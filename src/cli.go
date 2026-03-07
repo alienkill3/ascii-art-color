@@ -47,7 +47,7 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 
 	// Combine parsed positional args with separated positional args
 	parts := append(fs.Args(), positionalArgs...)
-	if len(parts) < 1 || len(parts) > 3 {
+	if len(parts) > 3 {
 		return cfg, ErrUsage
 	}
 	// fmt.Println(parts)

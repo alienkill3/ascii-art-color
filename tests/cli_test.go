@@ -79,7 +79,7 @@ func TestParseCLIArgs(t *testing.T) {
 	})
 
 	t.Run("invalid arg count", func(t *testing.T) {
-		_, err := src.ParseCLIArgs([]string{})
+		_, err := src.ParseCLIArgs([]string{"a", "b", "c", "d"})
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}

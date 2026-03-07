@@ -33,12 +33,12 @@ func (h *hexFlag) Set(s string) error {
 
 func main() {
 	cfg, err := src.ParseCLIArgs(os.Args[1:])
-	if cfg.Input == "" {
-		return
-	}
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
+	}
+	if cfg.Input == "" {
+		return
 	}
 
 	if !src.IsValidAscii(cfg.Input) {

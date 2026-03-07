@@ -22,7 +22,7 @@ func TestMainProcess(t *testing.T) {
 		{
 			name:     "empty arguments",
 			args:     []string{},
-			wantExit: 1,
+			wantExit: 0,
 		},
 		{
 			name:     "too many arguments",
@@ -347,7 +347,7 @@ func TestOutput_InvalidOutputFormat_ShowsUsage(t *testing.T) {
 	cmd.Env = append(
 		os.Environ(),
 		"GO_WANT_HELPER_PROCESS=1",
-		"ASCII_ART_TEST_ARGS=--invalid\x1fhello\x1fstandard",
+		"ASCII_ART_TEST_ARGS=--invalid\x1fhello\x1fstandard\x1fextra",
 	)
 
 	out, err := cmd.CombinedOutput()
