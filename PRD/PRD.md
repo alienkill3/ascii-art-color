@@ -12,7 +12,7 @@ go run . [FLAGS] [SUBSTRING] [INPUT STRING] [BANNER FONT]
 #### Flags:
 *   `--color=<value>`: Apply color to output (named color, hex: RRGGBB, or RGB: rgb(R,G,B))
 *   `--align=<value>`: Set text alignment (default: `left`, options: `left`, `right`, `center`, `justify`)
-*   `-s <value>` or `--substr=<value>`: Apply color only to matching substring (requires `--color`)
+*   `-s <value>`: Apply color only to matching substring (requires `--color`)
 *   `--output=<file>`: Write output to file instead of stdout
 
 #### Positional Arguments:
