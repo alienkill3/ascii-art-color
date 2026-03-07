@@ -10,26 +10,12 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 
 	"ascii-art/src"
 )
 
 type hexFlag int
-
-func (h *hexFlag) String() string {
-	return fmt.Sprintf("0x%x", int(*h))
-}
-
-func (h *hexFlag) Set(s string) error {
-	v, err := strconv.ParseInt(s, 0, 64)
-	if err != nil {
-		return err
-	}
-	*h = hexFlag(v)
-	return nil
-}
 
 func main() {
 	cfg, err := src.ParseCLIArgs(os.Args[1:])
@@ -71,5 +57,4 @@ func main() {
 		return
 	}
 	fmt.Print(content)
-	// fmt.Printf("%*s\n", ws.Cols, "test")
 }

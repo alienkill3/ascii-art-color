@@ -29,29 +29,19 @@ func TestMainProcess(t *testing.T) {
 			args:     []string{"sub string", "input string", "something"},
 			wantExit: 1,
 		},
-		// {
-		// 	name:     "Successful execution",
-		// 	args:     []string{"hello"},
-		// 	wantExit: 0,
-		// },
 		{
 			name:     "substr without color flag",
 			args:     []string{"l", "hello\nworld"},
 			wantExit: 1,
 		},
-		// {
-		// 	name:     "invalid data",
-		// 	args:     []string{"invalid\tdata"},
-		// 	wantExit: 1,
-		// },
-		// {
-		// 	name:     "valid input with new line",
-		// 	args:     []string{"A\nB\nC"},
-		// 	wantExit: 0,
-		// },
 		{
 			name:     "not ascii",
 			args:     []string{"ψάρι"},
+			wantExit: 1,
+		},
+		{
+			name:     "not ascii",
+			args:     []string{"--color=red", "ψάρι"},
 			wantExit: 1,
 		},
 		{
@@ -60,14 +50,34 @@ func TestMainProcess(t *testing.T) {
 			wantExit: 0,
 		},
 		{
+			name:     "wrong flag with substring and font",
+			args:     []string{"---color", "rgb(255, 0, 0)", "e", "hello", "shadow"},
+			wantExit: 1,
+		},
+		{
 			name:     "wrong RGB color format with substring and font",
 			args:     []string{"--color", "rgb(256, 0, 0)", "e", "hello", "shadow"},
+			wantExit: 1,
+		},
+		{
+			name:     "wrong RGB color format with substring and font",
+			args:     []string{"--color", "rgb(256, 0, 0", "e", "hello", "shadow"},
+			wantExit: 1,
+		},
+		{
+			name:     "wrong RGB color format with substring and font",
+			args:     []string{"--color", "rgb(56, 10, 10, 30)", "e", "hello", "shadow"},
 			wantExit: 1,
 		},
 		{
 			name:     "#hex color format with substring and font",
 			args:     []string{"--color", "#00ff00", "e", "hello", "shadow"},
 			wantExit: 0,
+		},
+		{
+			name:     "wrong length #hex color format with substring and font",
+			args:     []string{"--color", "#00ff00f", "e", "hello", "shadow"},
+			wantExit: 1,
 		},
 		{
 			name:     "wrong #hex color format with substring and font",
