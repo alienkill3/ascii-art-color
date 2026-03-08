@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-const OutputUsage = "Usage: go run . [FLAGS] [SUBSTRING] [STRING] [BANNER]\n\nEX: go run . --color=red so something standard"
+const OutputUsage = "Error: Incorrect format\nCorrect format: go run . [FLAGS] [SUBSTRING] [STRING] [BANNER]\nExample: go run . --color=red so something standard\n"
 
 var ErrUsage = errors.New(OutputUsage)
 
@@ -29,16 +29,17 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 	cfg := CLIConfig{Font: Standard}
 
 	// Separate flags from positional arguments to handle values starting with "-"
-	flagArgs, positionalArgs := separateArgsAndFlags(args)
+	flagArgs, positionalArgs, err := separateArgsAndFlags(args)
+	if err != nil {
+		return cfg, err
+	}
 
 	fs := flag.NewFlagSet("ascii-art", flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
 
-	// fontFlag := fs.String("f", "", "banner ASCII font")
 	colorFlag := fs.String("color", "", "text color: color name, hex format (RRGGBB), or RGB format rgb(R, G, B)")
 	alignFlag := fs.String("align", "left", "alignment of the output")
 	subStrFlag := fs.String("s", "", "apply color only to matching substring")
-	// fs.String("substr", "", "apply color only to matching substring")
 	outputFlag := fs.String("output", "", "write output to file")
 
 	if err := fs.Parse(flagArgs); err != nil {
@@ -47,10 +48,13 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 
 	// Combine parsed positional args with separated positional args
 	parts := append(fs.Args(), positionalArgs...)
+	if len(parts) == 0 {
+		return cfg, nil // No input provided, but not necessarily an error (could be just flags)
+	}
 	if len(parts) > 3 {
 		return cfg, ErrUsage
 	}
-	// fmt.Println(parts)
+
 	// Handle positional arguments: [substring] string [font]
 	// Logic:
 	// 1 arg: string
@@ -73,7 +77,7 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 		} else {
 			// Two args without font being second arg
 			// This is substring string
-			return cfg, errors.New("Error: wrong font flag\nValid fonts: standard, shadow, thinkertoy")
+			return cfg, errors.New("Error: wrong banner font\nValid fonts: standard, shadow, thinkertoy\nCorect format: go run . [FLAGS] [SUBSTRING] [STRING] [BANNER]\nExample: go run . --color=red so something standard\n")
 		}
 	} else if len(parts) == 3 {
 		// Three args: substring string font
@@ -82,7 +86,7 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 		}
 		cfg.Input = parts[1]
 		if !IsValidFont(parts[2]) {
-			return cfg, errors.New("Error: wrong font flag\nValid fonts: standard, shadow, thinkertoy\n")
+			return cfg, errors.New("Error: wrong banner font\nValid fonts: standard, shadow, thinkertoy\nCorrect format: go run . [FLAGS] [SUBSTRING] [STRING] [BANNER]\nExample: go run . --color=red so something standard\n")
 		}
 		cfg.Font = FontType(parts[2])
 	}
@@ -115,10 +119,6 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 
 	// Validate that substring is only used with color flag
 	if strings.TrimSpace(*subStrFlag) != "" {
-		// Check if substring looks like an unrecognized flag
-		if strings.HasPrefix(*subStrFlag, "--") {
-			return cfg, ErrUsage
-		}
 		if cfg.Options.ColorHex == nil {
 			return cfg, errors.New("Error: substring flag requires --color flag to be set\nCorrect format: go run . [color] [substring] [string] [banner]\nExample: go run . --color=red e hello shadow\n")
 		}
@@ -126,6 +126,10 @@ func ParseCLIArgs(args []string) (CLIConfig, error) {
 
 	cfg.Options.SubStr = *subStrFlag
 	cfg.OutputFile = *outputFlag
-	cfg.Options.Align = *alignFlag
+	if *alignFlag != "left" && *alignFlag != "right" && *alignFlag != "center" && *alignFlag != "justify" && *alignFlag != "" {
+		return cfg, errors.New("Error: wrong align flag value\nValid values: left, right, center, justify (if left empty defaults to left)\nCorrect format: go run . [FLAGS] [SUBSTRING] [STRING] [BANNER]\nExample: go run . --color=red so something standard\n")
+	} else {
+		cfg.Options.Align = *alignFlag
+	}
 	return cfg, nil
 }

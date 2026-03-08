@@ -294,7 +294,7 @@ func TestOutput_RGBColorSubstrHelloShadow(t *testing.T) {
 		t.Fatalf("failed to read golden file: %v", err)
 	}
 
-	got := runMainAndGetStdoutWithFlags(t, "--color", "rgb(255, 0, 0)", "e", "hello", "shadow")
+	got := runMainAndGetStdoutWithFlags(t, "--color=rgb'(255, 0, 0)'", "e", "hello", "shadow")
 
 	if !bytes.Equal(got, golden) {
 		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
@@ -307,7 +307,7 @@ func TestOutput_ColorFullHelloRed(t *testing.T) {
 		t.Fatalf("failed to read golden file: %v", err)
 	}
 
-	got := runMainAndGetStdoutWithFlags(t, "--color", "red", "hello", "standard")
+	got := runMainAndGetStdoutWithFlags(t, "--color=red", "hello", "standard")
 
 	if !bytes.Equal(got, golden) {
 		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
@@ -320,7 +320,7 @@ func TestOutput_ColorSubstrNotFound(t *testing.T) {
 		t.Fatalf("failed to read golden file: %v", err)
 	}
 
-	got := runMainAndGetStdoutWithFlags(t, "--color", "red", "z", "hello", "standard")
+	got := runMainAndGetStdoutWithFlags(t, "--color=red", "z", "hello", "standard")
 
 	if !bytes.Equal(got, golden) {
 		t.Fatalf("stdout mismatch\n--- got ---\n%s\n--- want (golden) ---\n%s", got, golden)
