@@ -27,7 +27,7 @@ go run . [FLAGS] [SUBSTRING] 'INPUT_STRING' [BANNER_FONT]
     * RGB format: `rgb(R, G, B)` (example: `--color='rgb(255, 87, 51)'`)
 *   `--align=<value>`: Set text alignment.
     * Options: `left` (default), `right`, `center`, `justify`
-*   `-s <substring>`: Color only matching substring (requires `--color`).
+*   `--s <substring>`: Color only matching substring (requires `--color`).
 *   `--output=<file>`: Write output to a file instead of stdout.
 
 ### Positional Arguments
