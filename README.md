@@ -44,7 +44,7 @@ go run . [FLAGS] [SUBSTRING] 'INPUT_STRING' [BANNER_FONT]
 *   **Template Support**: Includes three styles: `standard`, `shadow`, and `thinkertoy`.
 *   **Character Mapping**: Maps each character to a fixed **8-line height** graphical representation.
 *   **Color Support**: Supports named colors, HEX, and RGB.
-*   **Selective Coloring**: Supports substring-based coloring with `-s` or positional substring.
+*   **Selective Coloring**: Supports substring-based coloring with `--s` or positional substring.
 *   **Text Alignment**: Supports `left`, `right`, `center`, and `justify`.
 *   **File Output**: Can write rendered output directly to a file via `--output`.
 
